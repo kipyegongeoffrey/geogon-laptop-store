@@ -1,0 +1,18 @@
+<?php
+$consumerKey = "TwGpOgEGKAn92C6U7gtT9ZDclAspVKep2LOiBJaGPxGmjrrI";
+$consumerSecret = "yRvcBe7e8GaxmGsOtfMxgIhPBfjIospquEobjEgHGi5MkZggQo1hoFU5C7GUVlaH";
+
+$credentials = base64_encode($consumerKey . ':' . $consumerSecret);
+$url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_HTTPHEADER, [
+    'Authorization: Basic ' . $credentials
+]);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($curl);
+curl_close($curl);
+
+echo $response;
+?>
