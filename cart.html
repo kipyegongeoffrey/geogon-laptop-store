@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart – Geogon Store</title>
+  <style>
+    body { font-family: sans-serif; background: #f9f9f9; margin: 0; }
+    header, footer { background: #0d6efd; color: white; padding: 1rem; text-align: center; }
+    nav a { margin: 0 1rem; color: white; text-decoration: none; }
+    .container { max-width: 800px; margin: auto; padding: 1rem; }
+    .cart-item { background: white; margin-bottom: 1rem; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .cart-item-info { flex-grow: 1; }
+    .cart-item button { background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
+    .total { font-size: 18px; font-weight: bold; margin-top: 20px; }
+    .checkout-btn { background: green; color: white; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛒 Your Cart</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <div class="container" id="cartContainer">
+    <!-- Cart items will be loaded here -->
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Geogon Store. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const container = document.getElementById("cartContainer");
+
+      if (cart.length === 0) {
+        container.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
+
+      let total = 0;
+      container.innerHTML = "";
+
+      cart.forEach((item, index) => {
+        total += item.price;
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "cart-item";
+        itemDiv.innerHTML = `
+          <div class="cart-item-info">
+            <strong>${item.name}</strong><br/>
+            KES ${item.price.toLocaleString()}<br/>
+            <small>${item.specs}</small>
+          </div>
+          <button onclick="removeItem(${index})">Remove</button>
+        `;
+        container.appendChild(itemDiv);
+      });
+
+      const totalDiv = document.createElement("div");
+      totalDiv.className = "total";
+      totalDiv.innerHTML = `Total: KES ${total.toLocaleString()}`;
+      container.appendChild(totalDiv);
+
+      const checkoutBtn = document.createElement("button");
+      checkoutBtn.className = "checkout-btn";
+      checkoutBtn.innerText = "Proceed to Checkout";
+      checkoutBtn.onclick = () => location.href = "checkout.html";
+      container.appendChild(checkoutBtn);
+    }
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      loadCart();
+    }
+
+    loadCart();
+  </script>
+</body>
+</html>

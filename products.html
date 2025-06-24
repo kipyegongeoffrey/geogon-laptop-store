@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laptop Store – Products</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f6f9; margin: 0; }
+    header, footer { background: #0d6efd; color: white; padding: 1rem; text-align: center; }
+    nav a { margin: 0 1rem; color: white; text-decoration: none; }
+    .filter-buttons { text-align: center; margin: 1rem; }
+    .filter-buttons button { margin: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
+    .products { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; padding: 1rem; }
+    .product { background: white; padding: 1rem; width: 250px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .product img { width: 100%; border-radius: 8px; }
+    .product h4 { margin: 0.5rem 0; }
+    .product p { margin: 0.2rem 0; font-size: 14px; }
+    .product button { margin-top: 0.5rem; padding: 0.5rem; width: 100%; background: green; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖥️ Geogon Laptop Shop</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="cart.html">Cart 🛒</a>
+    </nav>
+  </header>
+
+  <div class="filter-buttons">
+    <button onclick="filterProducts('all')">All</button>
+    <button onclick="filterProducts('Dell')">Dell</button>
+    <button onclick="filterProducts('HP')">HP</button>
+    <button onclick="filterProducts('Lenovo')">Lenovo</button>
+    <button onclick="filterProducts('Acer')">Acer</button>
+    <button onclick="filterProducts('Asus')">Asus</button>
+  </div>
+
+  <div class="products" id="productList">
+    <!-- Products will be loaded by JavaScript -->
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Geogon Store. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const products = [
+      { id: 1, name: "Dell Inspiron", brand: "Dell", price: 55000, specs: "i5, 8GB RAM, 256GB SSD", img: "https://via.placeholder.com/250" },
+      { id: 2, name: "Dell XPS 13", brand: "Dell", price: 95000, specs: "i7, 16GB RAM, 512GB SSD", img: "https://via.placeholder.com/250" },
+      { id: 3, name: "HP Pavilion", brand: "HP", price: 60000, specs: "i5, 8GB RAM, 1TB HDD", img: "https://via.placeholder.com/250" },
+      { id: 4, name: "HP EliteBook", brand: "HP", price: 87000, specs: "i7, 16GB RAM, 512GB SSD", img: "https://via.placeholder.com/250" },
+      { id: 5, name: "Lenovo ThinkPad", brand: "Lenovo", price: 72000, specs: "i5, 8GB RAM, 256GB SSD", img: "https://via.placeholder.com/250" },
+      { id: 6, name: "Lenovo IdeaPad", brand: "Lenovo", price: 45000, specs: "i3, 4GB RAM, 500GB HDD", img: "https://via.placeholder.com/250" },
+      { id: 7, name: "Acer Aspire", brand: "Acer", price: 43000, specs: "i3, 4GB RAM, 1TB HDD", img: "https://via.placeholder.com/250" },
+      { id: 8, name: "Asus VivoBook", brand: "Asus", price: 51000, specs: "Ryzen 5, 8GB RAM, 256GB SSD", img: "https://via.placeholder.com/250" },
+    ];
+
+    function displayProducts(filter = "all") {
+      const container = document.getElementById("productList");
+      container.innerHTML = "";
+      products.forEach(p => {
+        if (filter === "all" || p.brand === filter) {
+          const el = document.createElement("div");
+          el.className = "product";
+          el.innerHTML = `
+            <img src="${p.img}" alt="${p.name}" />
+            <h4>${p.name}</h4>
+            <p><strong>KES ${p.price}</strong></p>
+            <p>${p.specs}</p>
+            <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+          `;
+          container.appendChild(el);
+        }
+      });
+    }
+
+    function filterProducts(brand) {
+      displayProducts(brand);
+    }
+
+    function addToCart(product) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push(product);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${product.name} added to cart!`);
+    }
+
+    // Load all on start
+    displayProducts();
+  </script>
+</body>
+</html>
