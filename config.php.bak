@@ -1,11 +1,11 @@
 <?php
-$consumerKey = "TwGpOgEGKAn92C6U7gtT9ZDclAspVKep2LOiBJaGPxGmjrrI";
-$consumerSecret = "yRvcBe7e8GaxmGsOtfMxgIhPBfjIospquEobjEgHGi5MkZggQo1hoFU5C7GUVlaH";
+$consumerKey = "42Z30QY5fPjwW6qxKQk181UavW0L9oApA8FeIsom8p5HTss4";
+$consumerSecret = "nhJaMVcCjUdKfaZPUmAeARCdiKbAqUTHaAFSws3KWQZAAKDjNgMXJxgGm01gRny1";
 
 $BusinessShortCode = "174379"; // Always this for sandbox
 $Passkey = "bfb279f9aa9bdbcf40b9b91df06f1c2e"; // Always this for sandbox
 
-$callbackUrl = "https://mydomain.com/geogon-admin/confirmation.php"; // You can leave this as-is for now
+$callbackUrl = "https://random-name.ngrok.io/geogon-admin/confirmation.php"; // You can leave this as-is for now
 $AccountReference = "GeogonStore";
 $TransactionDesc = "Laptop Purchase";
 ?>

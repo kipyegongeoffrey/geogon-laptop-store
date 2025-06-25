@@ -1,0 +1,123 @@
+<?php
+session_start();
+$conn = new mysqli("localhost", "root", "", "geogon_store");
+
+$brand = isset($_GET['brand']) ? $_GET['brand'] : null;
+
+$query = $brand 
+    ? $conn->prepare("SELECT * FROM products WHERE brand = ? ORDER BY id DESC")
+    : $conn->prepare("SELECT * FROM products ORDER BY id DESC");
+
+if ($brand) $query->bind_param("s", $brand);
+$query->execute();
+$result = $query->get_result();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shop – Geogon Store</title>
+    <style>
+        body { font-family: Arial; background: #f0f4f8; margin: 0; }
+        header {
+            background: #004080; color: white; padding: 20px; text-align: center;
+        }
+        nav {
+            background: #002a5c;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 10px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        h2 { text-align: center; margin-top: 20px; }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px;
+        }
+        .product {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 260px;
+            text-align: center;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+        .product img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+        .product h3 {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .product h3 a {
+            color: #004080;
+            text-decoration: none;
+        }
+        .product p { font-size: 14px; color: #555; }
+        .product form input[type="submit"] {
+            background: #004080;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Geogon Store – Products</h1>
+</header>
+
+<nav>
+    <a href="index.php">🏠 Home</a>
+    <a href="products.php">🛒 All Products</a>
+    <a href="cart.php">🧺 Cart</a>
+    <a href="checkout.php">💳 Checkout</a>
+</nav>
+
+<h2><?= $brand ? htmlspecialchars($brand) . " Laptops" : "All Laptops" ?></h2>
+
+<div class="grid">
+    <?php while ($row = $result->fetch_assoc()): ?>
+        <div class="product">
+            <a href="product_details.php?id=<?= $row['id'] ?>">
+                <img src="<?= htmlspecialchars($row['image_url']) ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+            </a>
+
+            <h3>
+                <a href="product_details.php?id=<?= $row['id'] ?>">
+                    <?= htmlspecialchars($row['name']) ?>
+                </a>
+            </h3>
+
+            <p><strong>KES <?= number_format($row['price']) ?></strong></p>
+            <<p><?= htmlspecialchars(substr($row['description'], 0, 80)) ?>...</p>
+<p><strong>Stock:</strong> <?= $row['stock'] > 0 ? $row['stock'] : 'Out of stock' ?></p>
+
+            <form method="post" action="cart.php">
+                <input type="hidden" name="add_to_cart" value="1">
+                <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
+                <input type="hidden" name="name" value="<?= htmlspecialchars($row['name']) ?>">
+                <input type="hidden" name="price" value="<?= $row['price'] ?>">
+                <input type="submit" value="🛒 Add to Cart">
+            </form>
+        </div>
+    <?php endwhile; ?>
+</div>
+
+</body>
+</html>

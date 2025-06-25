@@ -1,102 +1,127 @@
 <?php
 session_start();
-include 'db.php';
+$conn = new mysqli("localhost", "root", "", "geogon_store");
 
-$brandFilter = isset($_GET['brand']) ? $_GET['brand'] : '';
+$brand = isset($_GET['brand']) ? $_GET['brand'] : null;
 
-// Fetch products from DB
-$sql = "SELECT * FROM products";
-if ($brandFilter) {
-    $sql .= " WHERE brand = '" . $conn->real_escape_string($brandFilter) . "'";
-}
-$sql .= " ORDER BY id DESC";
+$query = $brand 
+    ? $conn->prepare("SELECT * FROM products WHERE brand = ? ORDER BY id DESC")
+    : $conn->prepare("SELECT * FROM products ORDER BY id DESC");
 
-$result = $conn->query($sql);
+if ($brand) $query->bind_param("s", $brand);
+$query->execute();
+$result = $query->get_result();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Available Laptops – Geogon Store</title>
+    <title>Shop – Geogon Store</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f9fc; }
-        header, nav, footer {
-            background: #004080;
-            color: white;
-            text-align: center;
-            padding: 15px;
+        body { font-family: Arial; background: #f0f4f8; margin: 0; }
+        header {
+            background: #004080; color: white; padding: 20px; text-align: center;
         }
-        nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
-        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        nav {
+            background: #002a5c;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 10px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        h2 { text-align: center; margin-top: 20px; }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px;
+        }
         .product {
             background: white;
             border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px;
-            width: 270px;
-            float: left;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            width: 260px;
+            text-align: center;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
         }
         .product img {
             width: 100%;
-            height: 160px;
-            object-fit: cover;
+            height: 180px;
+            object-fit: contain;
             border-radius: 5px;
         }
-        .product h3 { margin: 10px 0 5px 0; }
-        .product p { font-size: 14px; }
-        .product span { font-weight: bold; color: #0d6efd; }
-        .product form { margin-top: 10px; }
-        .product button {
-            background: green;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
+        .product h3 {
+            margin: 10px 0;
+            font-size: 18px;
         }
-        .clear { clear: both; }
+        .product h3 a {
+            color: #004080;
+            text-decoration: none;
+        }
+        .product p { font-size: 14px; color: #555; }
+        .product form input[type="submit"] {
+            background: #004080;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h2>Geogon Laptop Store</h2>
+    <h1>Geogon Store – Products</h1>
 </header>
 
 <nav>
-    <a href="index.php">Home</a>
-    <a href="products.php">All Products</a>
-    <a href="cart.php">Cart</a>
+    <a href="index.php">🏠 Home</a>
+    <a href="products.php">🛒 All Products</a>
+    <a href="cart.php">🧺 Cart</a>
+    <a href="checkout.php">💳 Checkout</a>
 </nav>
 
-<div class="container">
-    <h2>
-        <?php echo $brandFilter ? htmlspecialchars($brandFilter) . " Laptops" : "All Laptops"; ?>
-    </h2>
+<h2><?= $brand ? htmlspecialchars($brand) . " Laptops" : "All Laptops" ?></h2>
 
-    <?php if ($result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="product">
-                <img src="uploads/<?php echo $row['image']; ?>" alt="Laptop">
-                <h3><?php echo htmlspecialchars($row['name']); ?></h3>
-                <p><strong>Brand:</strong> <?php echo $row['brand']; ?></p>
-                <p><?php echo $row['specs']; ?></p>
-                <p><span>KES <?php echo number_format($row['price']); ?></span></p>
-                <form action="cart.php" method="post">
-                    <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-                    <input type="hidden" name="name" value="<?php echo htmlspecialchars($row['name']); ?>">
-                    <input type="hidden" name="price" value="<?php echo $row['price']; ?>">
-                    <button type="submit" name="add_to_cart">Add to Cart</button>
-                </form>
-            </div>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <p>No laptops available in this category.</p>
-    <?php endif; ?>
+<div class="grid">
+    <?php while ($row = $result->fetch_assoc()): ?>
+        <div class="product">
+            <a href="product_details.php?id=<?= $row['id'] ?>">
+                <img src="<?= htmlspecialchars($row['image_url']) ?>" alt="<?= htmlspecialchars($row['name']) ?>">
+            </a>
 
-    <div class="clear"></div>
+            <h3>
+                <a href="product_details.php?id=<?= $row['id'] ?>">
+                    <?= htmlspecialchars($row['name']) ?>
+                </a>
+            </h3>
+
+            <p><strong>KES <?= number_format($row['price']) ?></strong></p>
+            <<p><?= htmlspecialchars(substr($row['description'], 0, 80)) ?>...</p>
+<p><strong>Stock:</strong> <?= $row['stock'] > 0 ? $row['stock'] : 'Out of stock' ?></p>
+
+            <?php if ($row['stock'] > 0): ?>
+    <form method="post" action="cart.php">
+        <input type="hidden" name="add_to_cart" value="1">
+        <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
+        <input type="hidden" name="name" value="<?= htmlspecialchars($row['name']) ?>">
+        <input type="hidden" name="price" value="<?= $row['price'] ?>">
+        <input type="submit" value="🛒 Add to Cart">
+    </form>
+<?php else: ?>
+    <p style="color:red;"><strong>Out of stock</strong></p>
+<?php endif; ?>
+
+        </div>
+    <?php endwhile; ?>
 </div>
 
 </body>

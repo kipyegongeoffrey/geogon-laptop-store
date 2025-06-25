@@ -1,0 +1,38 @@
+<?php
+session_start();
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard – Geogon Store</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        h2 { color: #004080; }
+        a {
+            display: block;
+            margin-bottom: 10px;
+            color: #004080;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Welcome, <?= $_SESSION['admin'] ?>!</h2>
+
+<a href="view_orders.php">📦 View Orders</a>
+<a href="view_payments.php">💰 View Payments</a>
+<a href="view_matched.php">🔗 View Matched Orders & Payments</a>
+<a href="export_orders.php" target="_blank">⬇️ Download Orders (CSV)</a>
+<a href="export_payments.php" target="_blank">⬇️ Download Payments (CSV)</a>
+<a href="logout.php">🚪 Logout</a>
+<a href="view_admins.php">👤 Manage Admins</a>
+
+</body>
+</html>

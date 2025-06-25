@@ -1,13 +1,23 @@
-<?php
+<?php 
+session_start();
 include 'config.php';
 
 // Step 1: Get form input
 $name = $_POST['name'];
 $phone = $_POST['phone'];
 $location = $_POST['location'];
-$amount = 1; // You can later make this dynamic from cart
+$email = isset($_POST['email']) ? $_POST['email'] : '';
+$cart = json_decode($_POST['cart_data'], true);
 
-// Step 2: Get access token
+// Step 2: Calculate total from cart
+$amount = 0;
+if (!empty($cart)) {
+    foreach ($cart as $item) {
+        $amount += $item['price'] * $item['quantity'];
+    }
+}
+
+// Step 3: Get access token
 $credentials = base64_encode($consumerKey . ':' . $consumerSecret);
 $url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 
@@ -19,10 +29,9 @@ curl_close($ch);
 
 $token = json_decode($result)->access_token;
 
-// Step 3: Initiate STK Push
+// Step 4: STK Push
 $timestamp = date("YmdHis");
 $password = base64_encode($BusinessShortCode . $Passkey . $timestamp);
-
 $stkUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
 $stkData = [
@@ -53,10 +62,53 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($stkData));
 $response = curl_exec($ch);
 curl_close($ch);
 
-// Optional: Save customer details to DB (we can add this later)
+$responseData = json_decode($response, true);
+$checkoutID = $responseData['CheckoutRequestID'] ?? null;
 
-// Show message to customer
-echo "<h3>M-PESA payment initiated.</h3>";
-echo "<p>Please complete payment on your phone ($phone).</p>";
+// Step 5: Save Order
+$conn = new mysqli("localhost", "root", "", "geogon_store");
+if ($conn->connect_error) {
+    die("DB connection failed: " . $conn->connect_error);
+}
 
+$stmt = $conn->prepare("INSERT INTO orders (name, phone, location, amount, checkout_id) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssis", $name, $phone, $location, $amount, $checkoutID);
+$stmt->execute();
+$order_id = $stmt->insert_id;
+
+// Step 6: Save Items
+if (!empty($cart)) {
+    foreach ($cart as $item) {
+        $product_id = $item['id'];
+        $product_name = $item['name'];
+        $product_price = $item['price'];
+        $quantity = $item['quantity'];
+
+        $itemStmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, name, price, quantity) VALUES (?, ?, ?, ?, ?)");
+        $itemStmt->bind_param("iisdi", $order_id, $product_id, $product_name, $product_price, $quantity);
+        $itemStmt->execute();
+        $itemStmt->close();
+    }
+}
+
+// Step 7: SMS
+include 'sms.php';
+sendSMS($phone, "Thank you for ordering at Geogon Store. Await payment confirmation.");
+
+// Step 8: Email
+if (!empty($email)) {
+    $message = "Hello $name,\nThank you for shopping at Geogon Store.\n\nOrder:\n";
+    foreach ($cart as $item) {
+        $message .= "- {$item['name']} x{$item['quantity']} @ KES {$item['price']}\n";
+    }
+    $message .= "\nTotal: KES $amount";
+    mail($email, "Your Geogon Store Order", $message, "From: geogon@example.com");
+}
+
+// Step 9: Clear cart and redirect
+$_SESSION['last_order_id'] = $order_id;
+$stmt->close();
+$conn->close();
+header("Location: receipt.php");
+exit();
 ?>

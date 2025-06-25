@@ -1,11 +1,23 @@
 <?php
-$consumerKey = "TwGpOgEGKAn92C6U7gtT9ZDclAspVKep2LOiBJaGPxGmjrrI";
-$consumerSecret = "yRvcBe7e8GaxmGsOtfMxgIhPBfjIospquEobjEgHGi5MkZggQo1hoFU5C7GUVlaH";
+// Switch to 'live' when ready
+$environment = 'sandbox'; // or 'live'
 
-$BusinessShortCode = "174379"; // Always this for sandbox
-$Passkey = "bfb279f9aa9bdbcf40b9b91df06f1c2e"; // Always this for sandbox
+// Common settings
+$BusinessShortCode = '4490750'; // Replace with your Paybill/Till number
+$Passkey = 'YOUR_PASSKEY'; // Replace with the Daraja passkey
+$AccountReference = 'GeogonOrder'; // e.g. customer name or order id
+$TransactionDesc = 'Payment for Geogon Store Order';
+$callbackUrl = ' https://150a-102-219-208-161.ngrok-free.app -> http://localhost:80 '; // Use HTTPS in production
 
-$callbackUrl = "https://random-name.ngrok.io/geogon-admin/confirmation.php"; // You can leave this as-is for now
-$AccountReference = "GeogonStore";
-$TransactionDesc = "Laptop Purchase";
-?>
+// Environment-specific settings
+if ($environment === 'sandbox') {
+    $consumerKey = '42Z30QY5fPjwW6qxKQk181UavW0L9oApA8FeIsom8p5HTss4';
+    $consumerSecret = 'nhJaMVcCjUdKfaZPUmAeARCdiKbAqUTHaAFSws3KWQZAAKDjNgMXJxgGm01gRny1';
+    $accessTokenUrl = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+    $stkPushUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+} else {
+    $consumerKey = 'YOUR_LIVE_CONSUMER_KEY';
+    $consumerSecret = 'YOUR_LIVE_CONSUMER_SECRET';
+    $accessTokenUrl = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+    $stkPushUrl = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+}

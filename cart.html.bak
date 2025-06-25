@@ -48,15 +48,13 @@
       container.innerHTML = "";
 
       cart.forEach((item, index) => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-
+        total += item.price;
         const itemDiv = document.createElement("div");
         itemDiv.className = "cart-item";
         itemDiv.innerHTML = `
           <div class="cart-item-info">
             <strong>${item.name}</strong><br/>
-            KES ${item.price.toLocaleString()} x ${item.quantity} = <strong>KES ${itemTotal.toLocaleString()}</strong><br/>
+            KES ${item.price.toLocaleString()}<br/>
             <small>${item.specs}</small>
           </div>
           <button onclick="removeItem(${index})">Remove</button>

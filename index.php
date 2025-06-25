@@ -1,52 +1,71 @@
+<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Geogon Laptop Store – Home</title>
+    <title>Geogon Laptop Store</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f7f9fc;
-            margin: 0;
-            padding: 0;
-        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f9ff; }
         header {
-            background-color: #003366;
+            background: #004080;
             color: white;
             padding: 20px;
             text-align: center;
         }
         nav {
-            background-color: #004080;
-            text-align: center;
+            background: #002a5c;
             padding: 10px;
+            text-align: center;
         }
         nav a {
             color: white;
-            text-decoration: none;
             margin: 0 15px;
+            text-decoration: none;
             font-weight: bold;
         }
-        .container {
-            padding: 40px;
+        .hero {
             text-align: center;
+            padding: 60px 20px;
+            background: #e0f0ff;
         }
-        .brand-buttons a {
-            display: inline-block;
-            margin: 10px;
-            padding: 15px 25px;
-            background-color: #0077cc;
-            color: white;
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 18px;
+            color: #333;
+        }
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 20px;
+        }
+        .cat-box {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            width: 200px;
+            transition: 0.3s;
+        }
+        .cat-box:hover {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            transform: scale(1.05);
+        }
+        .cat-box a {
             text-decoration: none;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        .brand-buttons a:hover {
-            background-color: #005fa3;
+            color: #004080;
+            font-weight: bold;
         }
         footer {
             text-align: center;
-            background-color: #e9ecef;
-            padding: 15px;
+            background: #004080;
+            color: white;
+            padding: 20px;
             margin-top: 40px;
         }
     </style>
@@ -54,31 +73,32 @@
 <body>
 
 <header>
-    <h1>Welcome to Geogon Laptop Store</h1>
-    <p>Your trusted source for quality laptops</p>
+    <h1>Geogon Laptop Store</h1>
+    <p>Quality Laptops – Affordable Prices – M-PESA Checkout</p>
 </header>
 
 <nav>
-    <a href="index.php">Home</a>
-    <a href="products.php">View All Products</a>
-    <a href="cart.php">Cart</a>
-    <a href="checkout.php">Checkout</a>
+    <a href="index.php">🏠 Home</a>
+    <a href="products.php">🛒 Shop</a>
+    <a href="cart.php">🧺 Cart</a>
+    <a href="checkout.php">💳 Checkout</a>
 </nav>
 
-<div class="container">
-    <h2>Browse by Brand</h2>
-    <div class="brand-buttons">
-        <a href="products.php?brand=Dell">Dell</a>
-        <a href="products.php?brand=HP">HP</a>
-        <a href="products.php?brand=Lenovo">Lenovo</a>
-        <a href="products.php?brand=Acer">Acer</a>
-        <a href="products.php?brand=Asus">Asus</a>
-    </div>
-    <p><a href="products.php" style="text-decoration: underline;">Or view all products</a></p>
+<div class="hero">
+    <h1>Welcome to Geogon Store</h1>
+    <p>Browse by your favorite laptop brand</p>
+</div>
+
+<div class="categories">
+    <div class="cat-box"><a href="products.php?brand=Dell">💻 Dell</a></div>
+    <div class="cat-box"><a href="products.php?brand=HP">💼 HP</a></div>
+    <div class="cat-box"><a href="products.php?brand=Lenovo">🔋 Lenovo</a></div>
+    <div class="cat-box"><a href="products.php?brand=Acer">🚀 Acer</a></div>
+    <div class="cat-box"><a href="products.php?brand=Asus">🧠 Asus</a></div>
 </div>
 
 <footer>
-    &copy; <?php echo date("Y"); ?> Geogon Laptop Store. All rights reserved.
+    &copy; <?= date('Y') ?> Geogon Laptop Store. All rights reserved.
 </footer>
 
 </body>

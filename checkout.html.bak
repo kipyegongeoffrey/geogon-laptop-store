@@ -82,5 +82,6 @@
       document.getElementById("cart_data").value = JSON.stringify(cart);
     });
   </script>
+  JSON.parse(localStorage.getItem("cart"))
 </body>
 </html>
